@@ -1,4 +1,13 @@
 module TvdbParty
+  class InvalidXmlParser < HTTParty::Parser
+
+    def xml
+      MultiXml.parse(body.
+        gsub('<Overview>', '<Overview><![CDATA[').
+        gsub('</Overview>', ']]></Overview>'))
+    end
+  end
+
   class Search
     include HTTParty
     include HTTParty::Icebox
@@ -7,10 +16,14 @@ module TvdbParty
 
     base_uri 'www.thetvdb.com/api'
 
+    parser InvalidXmlParser
+
     def initialize(the_api_key, language = 'en')
       @api_key = the_api_key
       @language = language
     end
+
+
 
     def search(series_name)
       response = self.class.get("/GetSeries.php", {:query => {:seriesname => series_name, :language => @language}}).parsed_response

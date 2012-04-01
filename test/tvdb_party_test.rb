@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'test_helper'
+require_relative 'test_helper'
 
 class TvdbPartyTest < Test::Unit::TestCase
   context "tvdb" do
@@ -16,7 +16,7 @@ class TvdbPartyTest < Test::Unit::TestCase
       should "have 0 results" do
         assert_equal 0, @results.size
       end
-    
+      
     end
 
     context "search for episode that doesn't exist" do
@@ -27,7 +27,7 @@ class TvdbPartyTest < Test::Unit::TestCase
       should "have handle 404 on episode query" do
         assert_equal nil, @show.get_episode(1, 17)
       end
-    
+      
     end
 
     context "search for real show" do
@@ -64,10 +64,20 @@ class TvdbPartyTest < Test::Unit::TestCase
           assert_equal 'tt0386676', @series.imdb_id
         end
       end
-    
+      
     end
   
+    context "search with invalid xml in result" do
+      setup do
+        @results = @tvdb.search("or")
+      end
+      
+      should "have results and not throw an error" do
+        assert(@results.size > 0)
+      end
+    end
   end
+
   context "non english series" do
     setup do
       @tvdb = TvdbParty::Search.new('A97A9243F8030477', 'de')
