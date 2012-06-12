@@ -38,6 +38,20 @@ module TvdbParty
         []
       end
     end
+    
+    def search_by_imdb_id(imdb_id)
+      response = self.class.get("/GetSeriesByRemoteID.php", {:query => {:imdbid => imdb_id, :language => @language}}).parsed_response
+      return [] unless response["Data"]
+
+      case response["Data"]["Series"]
+      when Array
+        response["Data"]["Series"]
+      when Hash
+        [response["Data"]["Series"]]
+      else
+        []
+      end
+    end 
 
     def get_series_by_id(series_id, language = self.language)
       response = self.class.get("/#{@api_key}/series/#{series_id}/#{language}.xml").parsed_response
